@@ -1,0 +1,29 @@
+import numpy as np
+states = [0,1,2]        
+actions = ['S','L']       
+gamma = 0.9
+reward = {
+    (0,'S'): 2, (0,'L'): 1,
+    (1,'S'): 1, (1,'L'): 2,
+    (2,'S'): -1,(2,'L'): 3
+}
+def next_state(s,a):
+    if a == 'L': return max(0, s-1)
+    return min(2, s+1)
+V = {s:0 for s in states}
+policy = {s:'S' for s in states}
+stable = False
+while not stable:
+    for _ in range(20):
+        for s in states:
+            ns = next_state(s, policy[s])
+            V[s] = reward[(s,policy[s])] + gamma * V[ns]
+    stable = True
+    for s in states:
+        best = max(actions,
+                   key=lambda a: reward[(s,a)] + gamma*V[next_state(s,a)])
+        if best != policy[s]:
+            policy[s] = best
+            stable = False
+print("Optimal Traffic Light Policy:", policy)
+print("Value Function:", V)
