@@ -1,0 +1,37 @@
+import numpy as np
+grid_size = 4
+pickup = (3, 3)
+gamma = 0.9
+actions = ['U','D','L','R']
+V = np.zeros((grid_size, grid_size))
+def move(s,a):
+    x,y=s
+    if a=='U': x=max(0,x-1)
+    if a=='D': x=min(grid_size-1,x+1)
+    if a=='L': y=max(0,y-1)
+    if a=='R': y=min(grid_size-1,y+1)
+    return (x,y)
+for _ in range(50):
+    for i in range(grid_size):
+        for j in range(grid_size):
+            if (i,j) == pickup:
+                V[i,j] = 0
+                continue
+            V[i,j] = max(
+                -1 + gamma * V[move((i,j),a)]
+                for a in actions
+            )
+policy = {}
+for i in range(grid_size):
+    for j in range(grid_size):
+        if (i,j) == pickup: continue
+        policy[(i,j)] = max(
+            actions,
+            key=lambda a: -1 + gamma * V[move((i,j),a)]
+        )
+print("Optimal Value Function:")
+print(V)
+
+print("\nOptimal Dispatch Policy:")
+for s in policy:
+    print(s, "->", policy[s])
