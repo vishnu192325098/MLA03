@@ -1,0 +1,54 @@
+import numpy as np
+import random
+class GridEnvironment:
+    def __init__(self, grid_size, dirt_positions, obstacle_positions):
+        self.grid_size = grid_size
+        self.state = (0, 0)
+        self.dirt_positions = dirt_positions
+        self.obstacle_positions = obstacle_positions
+        self.reward_grid = np.zeros(grid_size)
+        self.initialize_rewards()
+    def initialize_rewards(self):
+        for pos in self.dirt_positions:
+            self.reward_grid[pos] = 1
+        for pos in self.obstacle_positions:
+            self.reward_grid[pos] = -1
+    def reset(self):
+        self.state = (0, 0)
+        return self.state
+    def step(self, action):
+        x, y = self.state
+        if action == 0:  # Up
+            x = max(0, x - 1)
+        elif action == 1:  # Down
+            x = min(self.grid_size[0] - 1, x + 1)
+        elif action == 2:  # Left
+            y = max(0, y - 1)
+        elif action == 3:  # Right
+            y = min(self.grid_size[1] - 1, y + 1)
+        self.state = (x, y)
+        reward = self.reward_grid[self.state]
+        return self.state, reward
+class CleaningRobot:
+    def __init__(self, environment):
+        self.environment = environment
+        self.policy = self.random_policy()
+    def random_policy(self):
+        return [random.randint(0, 3) for _ in range(100)]
+    def navigate(self):
+        total_reward = 0
+        state = self.environment.reset()
+        for action in self.policy:
+            state, reward = self.environment.step(action)
+            total_reward += reward
+            if reward == -1:  # Hit an obstacle
+                break
+        return total_reward
+if __name__ == "__main__":
+    grid_size = (5, 5)
+    dirt_positions = [(1, 1), (2, 2), (3, 3)]
+    obstacle_positions = [(1, 2), (2, 1)]
+    environment = GridEnvironment(grid_size, dirt_positions, obstacle_positions)
+    robot = CleaningRobot(environment)
+    total_reward = robot.navigate()
+    print(f"Total Reward: {total_reward}")
