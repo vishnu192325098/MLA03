@@ -1,0 +1,11 @@
+import numpy as np
+returns = np.array([0.02, 0.05, -0.01]) 
+policy = np.array([0.33, 0.33, 0.34])    
+lr = 0.1
+for step in range(50):
+    action = np.random.choice(3, p=policy)
+    reward = returns[action]
+    policy[action] += lr * reward
+    policy = np.maximum(policy, 0)
+    policy = policy / policy.sum()
+print("Optimized Investment Policy:", policy)
