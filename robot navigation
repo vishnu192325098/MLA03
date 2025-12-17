@@ -1,0 +1,26 @@
+import numpy as np
+grid = 4
+goal = (3,3)
+gamma = 0.9
+actions = ['U','D','L','R']
+V = np.zeros((grid,grid))
+def move(s,a):
+    x,y=s
+    if a=='U': x=max(0,x-1)
+    if a=='D': x=min(grid-1,x+1)
+    if a=='L': y=max(0,y-1)
+    if a=='R': y=min(grid-1,y+1)
+    return (x,y)
+for _ in range(50):
+    for i in range(grid):
+        for j in range(grid):
+            if (i,j)==goal: continue
+            V[i,j] = max(-1 + gamma*V[move((i,j),a)] for a in actions)
+state=(0,0)
+path=[state]
+while state!=goal:
+    state=max(actions,key=lambda a: -1 + gamma*V[move(state,a)])
+    state=move(path[-1],state)
+    path.append(state)
+print("Optimal Value Function:\n",V)
+print("Optimal Path:",path)
