@@ -1,0 +1,40 @@
+import random
+grid = 4
+goal = (3,3)
+actions = ['U','D','L','R']
+Q = {}
+returns = {}
+gamma = 0.9
+def move(s,a):
+    x,y=s
+    if a=='U': x=max(0,x-1)
+    if a=='D': x=min(grid-1,x+1)
+    if a=='L': y=max(0,y-1)
+    if a=='R': y=min(grid-1,y+1)
+    return (x,y)
+for i in range(grid):
+    for j in range(grid):
+        for a in actions:
+            Q[((i,j),a)] = 0
+            returns[((i,j),a)] = []
+for _ in range(500):
+    state = (0,0)
+    episode = []
+    while state != goal:
+        action = random.choice(actions)
+        next_s = move(state,action)
+        reward = 10 if next_s==goal else -1
+        episode.append((state,action,reward))
+        state = next_s
+    G = 0
+    for s,a,r in reversed(episode):
+        G = gamma*G + r
+        returns[(s,a)].append(G)
+        Q[(s,a)] = sum(returns[(s,a)]) / len(returns[(s,a)])
+policy = {}
+for i in range(grid):
+    for j in range(grid):
+        policy[(i,j)] = max(actions, key=lambda a: Q[((i,j),a)])
+print("Optimal Drone Policy:")
+for k in policy:
+    print(k,"->",policy[k])
