@@ -1,0 +1,36 @@
+destination = 4
+intersection = 2
+def simulate(policy, episodes=3):
+    total_reward = 0
+    for ep in range(episodes):
+        print("\nEpisode", ep+1)
+        state = 0
+        while state != destination:
+            action = policy(state)
+            print(" State:", state, "Action:", action)
+
+            if state == intersection and action == "MOVE":
+                print("  ❌ Traffic violation! Penalty -5")
+                total_reward -= 5
+            elif action == "MOVE":
+                state += 1
+                print("  ➜ Car moved to", state)
+                total_reward += 1
+            else:
+                print("  ⏸ Car stopped")
+        print(" ✅ Destination reached! Reward +10")
+        total_reward += 10
+
+    return total_reward
+def safe_policy(state):
+    return "STOP" if state == intersection else "MOVE"
+def aggressive_policy(state):
+    return "MOVE"
+print("\n--- SAFE POLICY SIMULATION ---")
+safe_reward = simulate(safe_policy)
+print("\n--- AGGRESSIVE POLICY SIMULATION ---")
+aggressive_reward = simulate(aggressive_policy)
+print("\nFINAL RESULTS")
+print("Safe Policy Total Reward:", safe_reward)
+print("Aggressive Policy Total Reward:", aggressive_reward)
+input("\nPress Enter to exit...")
