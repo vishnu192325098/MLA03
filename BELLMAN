@@ -1,0 +1,32 @@
+import numpy as np
+import matplotlib.pyplot as plt
+grid_size = 4
+gamma = 0.9
+goal = (3,3)
+actions = ['U','D','L','R']
+V = np.zeros((grid_size, grid_size))
+def move(s,a):
+    x,y=s
+    if a=='U': x=max(0,x-1)
+    if a=='D': x=min(grid_size-1,x+1)
+    if a=='L': y=max(0,y-1)
+    if a=='R': y=min(grid_size-1,y+1)
+    return (x,y)
+policy = {}
+for i in range(grid_size):
+    for j in range(grid_size):
+        policy[(i,j)] = 'R' if j < grid_size-1 else 'D'
+for _ in range(50):
+    for i in range(grid_size):
+        for j in range(grid_size):
+            if (i,j) == goal:
+                V[i,j] = 0
+            else:
+                ni,nj = move((i,j), policy[(i,j)])
+                V[i,j] = -1 + gamma * V[ni,nj]
+print("State Value Function:\n", V)
+plt.imshow(V)
+plt.colorbar(label="Value")
+plt.title("State Value Function")
+plt.show()
+
