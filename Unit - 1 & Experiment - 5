@@ -1,0 +1,36 @@
+import numpy as np
+N = 5                     
+pickup = (4, 4)
+gamma = 0.9
+A = ['U','D','L','R']
+V = np.zeros((N, N))
+def move(s, a):
+x, y = s
+return {
+'U': (max(0, x-1), y),
+'D': (min(N-1, x+1), y),
+'L': (x, max(0, y-1)),
+'R': (x, min(N-1, y+1))
+}[a]
+def reward(s):
+return 20 if s == pickup else -1
+for _ in range(50):
+for i in range(N):
+for j in range(N):
+if (i, j) != pickup:
+V[i, j] = max(
+reward((i, j)) + gamma * V[move((i, j), a)]
+for a in A
+)
+policy = {}
+for i in range(N):
+for j in range(N):
+policy[(i, j)] = "PICKUP" if (i, j) == pickup else max(
+A, key=lambda a: reward((i, j)) + gamma * V[move((i, j), a)]
+)
+print("Value Function:\n", V)
+print("\nOptimal Policy:")
+for i in range(N):
+    for j in range(N):
+        print(policy[(i, j)], end="\t")
+    print()
