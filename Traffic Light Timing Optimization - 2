@@ -1,0 +1,38 @@
+import numpy as np
+import random
+MAX_Q = 5
+gamma = 0.9
+states = [(i, j) for i in range(MAX_Q+1) for j in range(MAX_Q+1)]
+actions = [0, 1]  
+policy = {s: random.choice(actions) for s in states}
+V = {s: 0 for s in states}
+def transition(state, action):
+    q_NS, q_EW = state
+    if action == 0:
+        q_NS = max(0, q_NS - 2)
+    else:
+        q_EW = max(0, q_EW - 2)
+    q_NS = min(MAX_Q, q_NS + random.randint(0, 1))
+    q_EW = min(MAX_Q, q_EW + random.randint(0, 1))
+    return (q_NS, q_EW)
+def reward(state):
+    return -(state[0] + state[1])
+for _ in range(10):
+    for _ in range(50):
+        for s in states:
+            a = policy[s]
+            s_next = transition(s, a)
+            V[s] = reward(s) + gamma * V[s_next]
+    policy_stable = True
+    for s in states:
+        old_action = policy[s]
+        action_values = []
+        for a in actions:
+            s_next = transition(s, a)
+            action_values.append(reward(s) + gamma * V[s_next])
+        policy[s] = actions[np.argmax(action_values)]
+        if old_action != policy[s]:
+            policy_stable = False
+    if policy_stable:
+        break
+print("Optimal Policy Learned")
