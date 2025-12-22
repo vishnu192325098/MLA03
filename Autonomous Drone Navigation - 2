@@ -1,0 +1,40 @@
+import numpy as np
+import random
+GRID = 5
+actions = [0, 1, 2, 3]
+epsilon = 0.2
+gamma = 0.9
+Q = {}
+returns = {}
+def step(state, action):
+    x, y = state
+    if action == 0: x = max(0, x-1)
+    if action == 1: x = min(GRID-1, x+1)
+    if action == 2: y = max(0, y-1)
+    if action == 3: y = min(GRID-1, y+1)
+    next_state = (x, y)
+    reward = -1
+    if next_state == (GRID-1, GRID-1):
+        reward = 20
+    return next_state, reward
+def epsilon_greedy(state):
+    if random.random() < epsilon:
+        return random.choice(actions)
+    return max(actions, key=lambda a: Q.get((state, a), 0))
+for episode in range(500):
+    state = (0, 0)
+    episode_data = []
+    while state != (GRID-1, GRID-1):
+        action = epsilon_greedy(state)
+        next_state, reward = step(state, action)
+        episode_data.append((state, action, reward))
+        state = next_state
+    G = 0
+    visited = set()
+    for state, action, reward in reversed(episode_data):
+        G = gamma * G + reward
+        if (state, action) not in visited:
+            returns.setdefault((state, action), []).append(G)
+            Q[(state, action)] = np.mean(returns[(state, action)])
+            visited.add((state, action))
+print("Monte Carlo Control Completed")
