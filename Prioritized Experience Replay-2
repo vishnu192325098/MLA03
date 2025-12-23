@@ -1,0 +1,21 @@
+import random
+import numpy as np
+
+memory=[]
+priorities=[]
+
+def store(exp,td):
+    memory.append(exp)
+    priorities.append(abs(td)+1e-5)
+
+for _ in range(100):
+    s=random.randint(0,5)
+    a=random.randint(0,2)
+    r=random.randint(0,10)
+    s2=random.randint(0,5)
+    td=r
+    store((s,a,r,s2),td)
+
+idx=random.choices(range(len(memory)),weights=priorities,k=10)
+batch=[memory[i] for i in idx]
+print(batch)
