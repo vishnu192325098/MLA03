@@ -1,0 +1,31 @@
+import numpy as np
+import random
+
+maze = np.array([
+    [0, 0, 0, 1],
+    [0, -1, 0, 0],
+    [0, 0, 0, 0],
+    [1, 0, -1, 10]
+])
+
+V = np.zeros_like(maze, dtype=float)
+alpha, gamma = 0.1, 0.9
+actions = [(-1,0),(1,0),(0,-1),(0,1)]
+
+def step(s,a):
+    x,y=s
+    nx,ny=x+a[0],y+a[1]
+    if 0<=nx<4 and 0<=ny<4:
+        return (nx,ny)
+    return s
+
+for _ in range(500):
+    s=(0,0)
+    while maze[s]!=10 and maze[s]!=-1:
+        a=random.choice(actions)
+        s2=step(s,a)
+        r=maze[s2]
+        V[s]+=alpha*(r+gamma*V[s2]-V[s])
+        s=s2
+
+print(V)
