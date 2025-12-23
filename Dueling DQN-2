@@ -1,0 +1,36 @@
+import numpy as np
+import random
+
+states = 10
+actions = 3
+
+V = np.zeros(states)              
+A = np.zeros((states, actions))   
+Q = np.zeros((states, actions))
+
+alpha, gamma, epsilon = 0.1, 0.9, 0.1
+
+for _ in range(1000):
+    s = random.randint(0, states-1)
+
+    while s != states-1:
+        if random.random() < epsilon:
+            a = random.randint(0, actions-1)
+        else:
+            a = np.argmax(Q[s])
+
+        s2 = min(states-1, s + random.randint(0,1))
+        r = 10 if s2 == states-1 else -1
+
+        V[s] += alpha * (r + gamma * V[s2] - V[s])
+        A[s,a] += alpha * (r + gamma * np.max(Q[s2]) - Q[s,a])
+
+        Q[s] = V[s] + (A[s] - np.mean(A[s]))
+
+        s = s2
+
+print("State-Value V:")
+print(V)
+
+print("\nQ-values (Dueling):")
+print(Q)
