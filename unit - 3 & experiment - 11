@@ -1,0 +1,25 @@
+import numpy as np
+import random
+states = 5        
+actions = 3       
+policy = np.ones((states, actions)) / actions
+V = np.zeros(states)
+alpha_actor = 0.1
+alpha_critic = 0.1
+gamma = 0.9
+def reward(state, action):
+    return random.randint(5,10) if action == state % actions else random.randint(-5,0)
+for episode in range(1000):
+    s = random.randint(0, states-1)
+    a = np.random.choice(actions, p=policy[s])
+    s2 = random.randint(0, states-1)
+    r = reward(s, a)
+    advantage = r + gamma * V[s2] - V[s]
+    V[s] += alpha_critic * advantage
+    policy[s][a] += alpha_actor * advantage
+    policy[s] = np.maximum(policy[s], 0.01)
+    policy[s] /= np.sum(policy[s])
+print("Learned Value Function:")
+print(V)
+print("\nLearned Treatment Policy:")
+print(policy)
