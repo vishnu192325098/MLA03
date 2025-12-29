@@ -1,0 +1,47 @@
+import random
+import matplotlib.pyplot as plt
+
+# Subtasks
+SUBTASKS = ["Reach", "Grasp", "Assemble", "Place"]
+
+class RobotEnv:
+    def __init__(self):
+        self.state = 0  # subtask index
+        self.done = False
+        self.history = []
+
+    def step(self, action):
+        # Simulate successful subtask execution
+        if action == self.state:
+            reward = 10
+            self.state += 1
+            if self.state == len(SUBTASKS):
+                reward = 50
+                self.done = True
+        else:
+            reward = -1
+        
+        self.history.append(self.state)
+        return self.state, reward, self.done
+
+# High-level policy (manager)
+def high_level_policy(state):
+    return state  # select next required subtask
+
+# Low-level policy (worker)
+def low_level_policy(subtask):
+    # simulate internal actions
+    return subtask
+
+# Simulation
+env = RobotEnv()
+total_reward = 0
+
+while not env.done:
+    subtask = high_level_policy(env.state)
+    action = low_level_policy(subtask)
+    state, reward, done = env.step(action)
+    total_reward += reward
+
+print("Task completed!")
+print("Total reward:", total_reward)
