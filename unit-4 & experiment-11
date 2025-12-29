@@ -1,0 +1,39 @@
+import numpy as np
+T = 50
+alpha = 0.01
+gamma = 0.95
+theta = 0.5
+
+c_r = 1.0   # resource cost
+c_p = 2.0   # penalty cost
+
+# Initial state
+r = 5.0
+d = 6.0
+
+total_reward = 0
+
+for t in range(T):
+    # Policy
+    a = theta * (d - r)
+    
+    # Transition
+    r = max(0, r + a)
+    d = max(0, d + np.random.randn()*0.5)
+    
+    # Reward
+    penalty = max(0, d - r)
+    reward = -(c_r * r + c_p * penalty**2)
+    total_reward += (gamma**t) * reward
+    
+    # Analytic gradient
+    if d > r:
+        grad = (-c_r + 2 * c_p * (d - r)) * (d - r)
+    else:
+        grad = -c_r * (d - r)
+    
+    # Policy update
+    theta += alpha * grad
+
+print("Optimized theta:", round(theta, 3))
+print("Total discounted reward:", round(total_reward, 2))
